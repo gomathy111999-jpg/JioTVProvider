@@ -189,13 +189,13 @@ class JioTVProvider(context: Context) : MainAPI() {
     // OTP helpers
     // ─────────────────────────────────────────────────────────────────────────
     suspend fun sendOtp(mobileNumber: String): Boolean {
-        val encoded = Base64.encodeToString(mobileNumber.toByteArray(), Base64.NO_WRAP)
+        val encoded = Base64.encodeToString("+91$mobileNumber".toByteArray(), Base64.NO_WRAP)
         val response = app.post(OTP_SEND_URL, headers = otpHeaders, json = mapOf("number" to encoded))
         return response.code == 204 || response.isSuccessful
     }
 
     suspend fun verifyOtp(mobileNumber: String, otp: String): String {
-        val encoded   = Base64.encodeToString(mobileNumber.toByteArray(), Base64.NO_WRAP)
+        val encoded   = Base64.encodeToString("+91$mobileNumber".toByteArray(), Base64.NO_WRAP)
         val androidId = (1..8).joinToString("") { (0..255).random().toString(16).padStart(2, '0') }
 
         val response = app.post(
