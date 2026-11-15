@@ -60,7 +60,7 @@ jobs:
               "iconUrl": "https://jiotv.catchup.cdn.jio.com/apis/v1.3/fetchChannelLogos/get/?channel_id=1",
               "name": "JioTV",
               "internalName": "JioTVProvider",
-              "authors": ["YourName"],
+              "authors": ["Subrata96411"],
               "description": "Watch JioTV live channels. Requires Jio OTP login.",
               "repositoryUrl": "${REPO_URL}",
               "language": "all",
