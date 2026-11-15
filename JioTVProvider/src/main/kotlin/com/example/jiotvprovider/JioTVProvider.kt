@@ -104,7 +104,7 @@ class JioTVProvider(context: Context) : MainAPI() {
         val results = fetchChannels()
             .filter { it.channelCategoryId.toString() == request.data }
             .map { it.toSearchResponse() }
-        return newHomePageResponse(request.name, results, hasNextPage = false)
+        return newHomePageResponse(request.name, results, hasNext = false)
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -252,12 +252,12 @@ class JioTVProvider(context: Context) : MainAPI() {
             val safeLogo = logoUrl.replace("/", "|")
             return "jiotv://channel/$channel_id/${channel_name.replace("/", "-")}/$safeLogo/$isHD/$channelCategoryId"
         }
-
-        fun toSearchResponse(): LiveSearchResponse =
-            newLiveSearchResponse(channel_name, internalUrl, TvType.Live) {
-                posterUrl = logoUrl
-            }
     }
+
+    private fun JioChannel.toSearchResponse(): LiveSearchResponse =
+        newLiveSearchResponse(channel_name, internalUrl, TvType.Live) {
+            posterUrl = logoUrl
+        }
 
     private data class LiveURLOutput(
         val bitrates : Bitrates = Bitrates(),
