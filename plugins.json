@@ -1,0 +1,16 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/gomathy111999-jpg/JioTVProvider/builds/JioTVProvider.cs3",
+    "apiVersion": 4,
+    "version": 5,
+    "iconUrl": "https://jiotv.catchup.cdn.jio.com/apis/v1.3/fetchChannelLogos/get/?channel_id=1",
+    "name": "JioTV",
+    "internalName": "JioTVProvider",
+    "authors": ["Subrata96411"],
+    "description": "Watch JioTV live channels. Requires Jio OTP login.",
+    "repositoryUrl": "https://github.com/gomathy111999-jpg/JioTVProvider",
+    "language": "all",
+    "tvTypes": ["Live"],
+    "status": 1
+  }
+]
