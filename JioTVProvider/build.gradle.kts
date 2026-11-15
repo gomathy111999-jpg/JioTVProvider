@@ -9,8 +9,8 @@ buildscript {
     }
     dependencies {
         classpath("com.github.recloudstream:gradle:-SNAPSHOT")
-        classpath("com.android.tools.build:gradle:8.2.2")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10")
+        classpath("com.android.tools.build:gradle:8.7.3")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.0")
     }
 }
 
@@ -25,7 +25,7 @@ fun Project.android(configuration: BaseExtension.() -> Unit) =
     extensions.getByName<BaseExtension>("android").configuration()
 
 cloudstream {
-    setRepo("https://github.com/Subrata96411/JioTVProvider")
+    setRepo(System.getenv("GITHUB_REPOSITORY") ?: "gomathy111999-jpg/JioTVProvider")
     authors = listOf("Subrata96411")
     description = "Watch JioTV live channels in CloudStream. Requires a Jio mobile number for OTP login."
     language = "all"
@@ -34,11 +34,11 @@ cloudstream {
 
 android {
     namespace = "com.example.jiotvprovider"
-    compileSdkVersion(34)
+    compileSdkVersion(35)
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
     }
 
     compileOptions {
@@ -48,6 +48,6 @@ android {
 }
 
 dependencies {
-    val cloudstream by configurations
-    cloudstream("com.github.recloudstream.cloudstream:library:v4.7.0")
+    val implementation by configurations
+    implementation("com.github.recloudstream.cloudstream:library:-SNAPSHOT")
 }
