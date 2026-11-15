@@ -25,7 +25,7 @@ class JioTVProvider(context: Context) : MainAPI() {
     override var lang            = "hi"
     override val hasQuickSearch  = false
 
-    private val CHANNELS_API   = "$mainUrl/apis/v3.0/getMobileChannelList/get/?langId=6&os=android&devicetype=phone&usertype=tvYR7NSNn7rymo3F&version=315"
+    private val CHANNELS_API   = "https://jiotvapi.cdn.jio.com/apis/v3.1/getMobileChannelList/get/?langId=6&os=android&devicetype=phone&usertype=JIO&version=315"
     private val LIVE_URL_API   = "$mainUrl/apis/v1.3/geturl/get/"
     private val OTP_SEND_URL   = "$mainUrl/userservice/apis/v1/loginotp/send"
     private val OTP_VERIFY_URL = "$mainUrl/userservice/apis/v1/loginotp/verify"

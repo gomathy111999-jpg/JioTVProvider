@@ -58,7 +58,7 @@ jobs:
             {
               "url": "${PLUGIN_URL}",
               "apiVersion": 4,
-              "version": 2,
+              "version": 3,
               "iconUrl": "https://jiotv.catchup.cdn.jio.com/apis/v1.3/fetchChannelLogos/get/?channel_id=1",
               "name": "JioTV",
               "internalName": "JioTVProvider",
