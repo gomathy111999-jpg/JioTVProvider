@@ -68,7 +68,7 @@ class JioTVProvider(context: Context) : MainAPI() {
             "uniqueId"     to (getPreferenceString(PREF_UNIQUE_ID, "") ?: ""),
             "ssoToken"     to (getPreferenceString(PREF_SSO_TOKEN, "") ?: ""),
             "channelId"    to "",
-            "x-api-key"   to "l7XX330d275gg2tCO8DDgJXEJisXXXX",
+            "x-api-key"   to "l7xx938b6684ee9e4bbe8831a9a682b8e19f",
             "User-Agent"   to "okhttp/4.2.2",
             "Content-Type" to "application/json; charset=utf-8"
         )
@@ -148,7 +148,7 @@ class JioTVProvider(context: Context) : MainAPI() {
         val liveOutput = fetchLiveUrl(data)
             ?: throw ErrorLoadingException("Failed to get stream URL. Are you logged in?")
 
-        val bitrates = liveOutput.bitrates
+        val bitrates = if (liveOutput.bitrates.hasAny()) liveOutput.bitrates else liveOutput.m3u8
         listOf(
             "Auto"   to bitrates.auto,
             "High"   to bitrates.high,
@@ -286,7 +286,8 @@ class JioTVProvider(context: Context) : MainAPI() {
     private data class LiveURLOutput(
         val bitrates : Bitrates = Bitrates(),
         val code     : Int      = 0,
-        val result   : String   = ""
+        val result   : String   = "",
+        val m3u8      : Bitrates = Bitrates()
     )
 
     private data class Bitrates(
@@ -294,7 +295,9 @@ class JioTVProvider(context: Context) : MainAPI() {
         val high   : String? = null,
         val medium : String? = null,
         val low    : String? = null
-    )
+    ) {
+        fun hasAny() = !auto.isNullOrBlank() || !high.isNullOrBlank() || !medium.isNullOrBlank() || !low.isNullOrBlank()
+    }
 
     private data class OtpVerifyResponse(
         val authToken         : String?            = null,
