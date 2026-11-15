@@ -248,7 +248,7 @@ class JioTVProvider(context: Context) : MainAPI() {
         val channelLanguageId  : Int     = 0,
         val isHD               : Boolean = false
     ) {
-        private val internalUrl: String get() {
+        val internalUrl: String get() {
             val safeLogo = logoUrl.replace("/", "|")
             return "jiotv://channel/$channel_id/${channel_name.replace("/", "-")}/$safeLogo/$isHD/$channelCategoryId"
         }
