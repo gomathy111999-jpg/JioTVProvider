@@ -1,5 +1,6 @@
 package com.example.jiotvprovider
 
+import android.content.Context
 import android.util.Base64
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -9,9 +10,10 @@ import com.lagradost.cloudstream3.utils.AppUtils.parseJson
  * JioTVProvider — A CloudStream 3 provider for JioTV live channels.
  *
  * Authentication: OTP-based (Jio mobile number + 6-digit SMS OTP).
- * Credentials are stored in SharedPreferences via getSharedPreferences().
+ * Credentials are stored in app-private SharedPreferences.
  */
-class JioTVProvider : MainAPI() {
+class JioTVProvider(context: Context) : MainAPI() {
+    private val preferences = context.getSharedPreferences("jiotv_provider", Context.MODE_PRIVATE)
 
     // ─────────────────────────────────────────────────────────────────────────
     // Plugin identity
@@ -19,7 +21,6 @@ class JioTVProvider : MainAPI() {
     override var mainUrl         = "https://jiotvapi.media.jio.com"
     override var name            = "JioTV"
     override val hasMainPage     = true
-    override val hasSearch       = true
     override val supportedTypes  = setOf(TvType.Live)
     override var lang            = "hi"
     override val hasQuickSearch  = false
@@ -48,10 +49,6 @@ class JioTVProvider : MainAPI() {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Settings
-    // ─────────────────────────────────────────────────────────────────────────
-    override val settingsGenerator by lazy { JioTVSettings(this) }
-
     // ─────────────────────────────────────────────────────────────────────────
     // Credential helpers
     // ─────────────────────────────────────────────────────────────────────────
@@ -103,7 +100,7 @@ class JioTVProvider : MainAPI() {
     )
 
     override suspend fun getMainPage(page: Int, request: MainPageRequest): HomePageResponse {
-        if (!isLoggedIn()) throw ErrorLoadingException("Please log in to JioTV first. Go to ⚙ Settings → JioTV → Plugin Settings.")
+        if (!isLoggedIn()) throw ErrorLoadingException("Please log in from the JioTV plugin settings first.")
         val results = fetchChannels()
             .filter { it.channelCategoryId.toString() == request.data }
             .map { it.toSearchResponse() }
@@ -132,11 +129,7 @@ class JioTVProvider : MainAPI() {
         val categoryId  = parts.getOrElse(4) { "0" }
         val categoryName = CATEGORY_MAP[categoryId] ?: "Live"
 
-        val episode = newEpisode(channelId) {
-            name = if (isHD) "🔴 Live (HD)" else "🔴 Live"
-        }
-
-        return newTvSeriesLoadResponse(channelName, url, TvType.Live, listOf(episode)) {
+        return newLiveStreamLoadResponse(channelName, url, channelId) {
             posterUrl = logoUrl
             tags      = listOf(categoryName, if (isHD) "HD" else "SD")
             plot      = "Live channel: $channelName | Category: $categoryName"
@@ -163,20 +156,17 @@ class JioTVProvider : MainAPI() {
             "Low"    to bitrates.low
         ).forEach { (label, streamUrl) ->
             if (!streamUrl.isNullOrBlank()) {
-                callback(ExtractorLink(
-                    source  = name,
-                    name    = "JioTV $label",
-                    url     = streamUrl,
-                    referer = mainUrl,
+                callback(newExtractorLink(name, "JioTV $label", streamUrl) {
+                    type = ExtractorLinkType.M3U8
+                    referer = mainUrl
                     quality = when (label) {
                         "High"   -> Qualities.P1080.value
                         "Medium" -> Qualities.P720.value
                         "Low"    -> Qualities.P480.value
                         else     -> Qualities.Unknown.value
-                    },
-                    isM3u8  = true,
+                    }
                     headers = buildHeaders()
-                ))
+                })
             }
         }
         return true
@@ -200,7 +190,6 @@ class JioTVProvider : MainAPI() {
     // ─────────────────────────────────────────────────────────────────────────
     suspend fun sendOtp(mobileNumber: String): Boolean {
         val encoded = Base64.encodeToString(mobileNumber.toByteArray(), Base64.NO_WRAP)
-        val body = """{"number":"$encoded"}"""
         val response = app.post(OTP_SEND_URL, headers = otpHeaders, json = mapOf("number" to encoded))
         return response.code == 204 || response.isSuccessful
     }
@@ -296,12 +285,11 @@ class JioTVProvider : MainAPI() {
     // Preference helpers
     // ─────────────────────────────────────────────────────────────────────────
     fun getPreferenceString(key: String, default: String?): String? =
-        getSharedPreferences()?.getString(key, default)
+        preferences.getString(key, default)
 
     fun putPreferenceString(key: String, value: String?) {
-        getSharedPreferences()?.edit()?.apply {
-            if (value == null) remove(key) else putString(key, value)
-            apply()
-        }
+        val editor = preferences.edit()
+        if (value == null) editor.remove(key) else editor.putString(key, value)
+        editor.apply()
     }
 }

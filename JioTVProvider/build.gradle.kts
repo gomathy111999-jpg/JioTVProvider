@@ -44,18 +44,21 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
 tasks.withType<KotlinJvmCompile> {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_1_8)
+        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 
 dependencies {
+    val cloudstream by configurations
     val implementation by configurations
-    implementation("com.github.recloudstream.cloudstream:library:-SNAPSHOT")
+    cloudstream("com.github.recloudstream.cloudstream:library:pre-release")
+    implementation("com.github.Blatzar:NiceHttp:0.4.18")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
 }

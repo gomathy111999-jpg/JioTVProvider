@@ -7,6 +7,8 @@ import com.lagradost.cloudstream3.plugins.Plugin
 @CloudstreamPlugin
 class JioTVPlugin : Plugin() {
     override fun load(context: Context) {
-        registerMainAPI(JioTVProvider())
+        val provider = JioTVProvider(context.applicationContext)
+        registerMainAPI(provider)
+        openSettings = { settingsContext -> JioTVSettings(provider).show(settingsContext) }
     }
 }
