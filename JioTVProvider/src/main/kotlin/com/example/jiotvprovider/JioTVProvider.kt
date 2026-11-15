@@ -181,8 +181,32 @@ class JioTVProvider(context: Context) : MainAPI() {
     }
 
     private suspend fun fetchLiveUrl(channelId: String): LiveURLOutput? {
-        val response = app.get("$LIVE_URL_API?channel_id=$channelId&stream_type=Smooth", headers = buildHeaders())
-        return if (response.isSuccessful) parseJson<LiveURLOutput>(response.text) else null
+        val playbackUrl = "https://jiotvapi.media.jio.com/playback/apis/v1.1/geturl?langId=6"
+        val playbackHeaders = buildHeaders() + mapOf(
+            "appkey" to "NzNiMDhlYzQyNjJm",
+            "channel_id" to channelId,
+            "crmid" to (getPreferenceString(PREF_CRM, "") ?: ""),
+            "userId" to (getPreferenceString(PREF_CRM, "") ?: ""),
+            "deviceId" to "cloudstream",
+            "isott" to "false",
+            "languageId" to "6",
+            "lbcookie" to "1",
+            "osVersion" to "13",
+            "subscriberId" to (getPreferenceString(PREF_CRM, "") ?: ""),
+            "usergroup" to "tvYR7NSNn7rymo3F",
+            "versionCode" to "422",
+            "Content-Type" to "application/x-www-form-urlencoded"
+        )
+        val form = mapOf(
+            "channel_id" to channelId,
+            "stream_type" to "Seek",
+            "begin" to (System.currentTimeMillis() / 1000L).toString(),
+            "srno" to java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US).format(java.util.Date())
+        )
+        val response = app.post(playbackUrl, headers = playbackHeaders, data = form)
+        return if (response.isSuccessful && response.text.isNotBlank()) {
+            parseJson<LiveURLOutput>(response.text)
+        } else null
     }
 
     // ─────────────────────────────────────────────────────────────────────────
