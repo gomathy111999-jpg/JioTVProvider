@@ -75,6 +75,21 @@ jobs:
           echo "Generated plugins.json:"
           cat builds/plugins.json
 
+          cat > builds/repo.json << EOF
+          {
+            "iconUrl": "https://jiotv.catchup.cdn.jio.com/apis/v1.3/fetchChannelLogos/get/?channel_id=1",
+            "name": "JioTVProvider",
+            "description": "JioTV live channels for CloudStream",
+            "manifestVersion": 1,
+            "pluginLists": [
+              "https://raw.githubusercontent.com/${{ github.repository }}/builds/plugins.json"
+            ]
+          }
+          EOF
+
+          echo "Generated repo.json:"
+          cat builds/repo.json
+
       # ── 6. Push to the `builds` branch ────────────────────────────────────
       - name: Deploy to builds branch
         run: |
@@ -94,7 +109,7 @@ jobs:
           echo ""
           echo "==========================================="
           echo "  CloudStream Repository URL:"
-          echo "  https://raw.githubusercontent.com/${{ github.repository }}/builds/"
+          echo "  https://raw.githubusercontent.com/${{ github.repository }}/builds/repo.json"
           echo "==========================================="
           echo ""
           echo "Add this URL in CloudStream → Settings → Extensions → Add Repository"
